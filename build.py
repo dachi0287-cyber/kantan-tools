@@ -86,7 +86,7 @@ ul.l{padding-left:1.2em}footer{margin-top:32px;font-size:13px;color:#666}"""
 
 def page(title, desc, path, inner, extra_head=""):
     ads = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS}" crossorigin="anonymous"></script>' if ADS else ""
-    return f'''<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    return f'''<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="xLGG0v5YcNHr3CameU5J1OM1DnNkP6wsqv2CX71g6PE" />
 <title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc)}">{('<link rel="canonical" href="'+SITE+path+'">') if SITE else ""}
 <style>{CSS}</style>{ads}{extra_head}</head><body><header><a href="./">{NAME}</a></header>{inner}
 <footer><a href="privacy.html">プライバシーポリシー</a> / &copy; {NAME}</footer></body></html>'''
