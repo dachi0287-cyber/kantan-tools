@@ -75,6 +75,10 @@ FAQ = {
 "kaigyo":[("PDFからコピーすると改行が入るのはなぜですか？","PDFは行ごとに文字が配置されているため、コピー時に各行の末尾に改行が入ります。"),("全角英数字を半角にするとどうなりますか？","「ＡＢＣ１２３」が「ABC123」になります。全角カナや記号は変換しません。"),("入力内容は外部に送られますか？","送信されません。すべてブラウザ内で処理されます。")],
 }
 
+from sales_tools import SALES, SALES_FAQ
+TOOLS += SALES
+FAQ.update(SALES_FAQ)
+
 CSS="""body{font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;max-width:720px;margin:0 auto;padding:16px;line-height:1.7;color:#222}
 header a{font-weight:bold;text-decoration:none;color:#0b5}label{display:block;margin:8px 0}input,select,textarea{width:100%;padding:8px;font-size:16px;box-sizing:border-box}
 .res{background:#f2faf5;border-radius:8px;padding:12px;margin:12px 0;font-size:18px}button{padding:8px 12px;margin:4px 0}.ad{min-height:90px;margin:16px 0;text-align:center}
