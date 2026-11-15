@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """静的ツールサイト生成。使い方: SITE_URL=https://example.com ADSENSE=ca-pub-xxxx python3 build.py"""
 import os, html, datetime
-SITE = (os.environ.get("SITE_URL") or "https://dachi0287-cyber.github.io/kantan-tools").rstrip("/")
+SITE = (os.environ.get("SITE_URL") or "").rstrip("/")
 ADS = os.environ.get("ADSENSE") or ""
 NAME = "かんたんツール帳"
 OUT = "dist"
@@ -83,7 +83,7 @@ ul.l{padding-left:1.2em}footer{margin-top:32px;font-size:13px;color:#666}"""
 def page(title, desc, path, inner, extra_head=""):
     ads = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS}" crossorigin="anonymous"></script>' if ADS else ""
     return f'''<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc)}"><link rel="canonical" href="{SITE}{path}">
+<title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc)}">{('<link rel="canonical" href="'+SITE+path+'">') if SITE else ""}
 <style>{CSS}</style>{ads}{extra_head}</head><body><header><a href="./">{NAME}</a></header>{inner}
 <footer><a href="privacy.html">プライバシーポリシー</a> / &copy; {NAME}</footer></body></html>'''
 
@@ -110,7 +110,7 @@ w("/index.html", page(f"{NAME}｜無料の便利ツール集","登録不要・�
 w("/privacy.html", page("プライバシーポリシー","プライバシーポリシー","/privacy.html", f'''<h1>プライバシーポリシー</h1><p>当サイトのツールは入力内容をサーバーに送信せず、ブラウザ内で処理します。</p>
 <p>当サイトはGoogle AdSense等の第三者配信の広告サービスを利用する場合があり、広告配信事業者はCookieを使用して利用者の興味に応じた広告を表示します。Cookieを無効にする方法や詳細は各社のポリシーをご確認ください。アクセス解析ツールを導入した場合も同様にCookieを使用しますが、個人を特定する情報は収集しません。</p>'''))
 urls.append("/privacy.html")
-w("/sitemap.xml",'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+"".join(f"<url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod></url>" for u in urls)+"</urlset>")
-w("/robots.txt",f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
+if SITE: w("/sitemap.xml",'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+"".join(f"<url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod></url>" for u in urls)+"</urlset>")
+w("/robots.txt","User-agent: *\nAllow: /\n"+(f"Sitemap: {SITE}/sitemap.xml\n" if SITE else ""))
 if ADS: w("/ads.txt",f"google.com, pub-{ADS.replace('ca-pub-','')}, DIRECT, f08c47fec0942fa0\n")
 print(f"生成: {len(urls)}ページ -> {OUT}/")
