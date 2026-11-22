@@ -78,3 +78,35 @@ SALES_FAQ = {
 "sonneki":[("損益分岐点とは？","売上と費用が等しく、利益がゼロになる点です。これを超えると黒字になります。"),("変動費と固定費の違いは？","変動費は販売数量に比例して増える費用(仕入れ・配送費など)、固定費は売上に関わらず発生する費用(家賃・人件費など)です。")],
 "shiharai":[("「月末締め翌月末払い」はいつ支払われますか？","例: 4月15日の取引は4月末で締まり、5月末が支払期日です。"),("支払日が休日の場合は？","契約や取引先の規定によります。前営業日払い・翌営業日払いなど、事前に確認してください。")],
 }
+
+SALES += [
+ dict(slug="funnel", title="必要な商談数・アポ数の逆算計算", desc="売上目標・平均単価・成約率から、必要な受注数・アポ数・架電数を逆算。",
+  body='<label>月間売上目標(円)<input id="t" type="number" value="3000000"></label><label>平均受注単価(円)<input id="u" type="number" value="300000"></label><label>アポ→受注の成約率(%)<input id="c" type="number" value="25"></label><label>架電→アポの獲得率(%)<input id="a" type="number" value="3"></label><div class="res" id="r"></div>',
+  js=F+'''function f(){const t=+$("t").value,u=+$("u").value,c=+$("c").value/100,a=+$("a").value/100;
+if(!(u>0&&c>0&&a>0)){$("r").textContent="単価・率は0より大きい値を入力";return}
+const o=Math.ceil(t/u),ap=Math.ceil(o/c),ca=Math.ceil(ap/a);
+$("r").innerHTML=`必要な受注数: <b>${o.toLocaleString()}件</b><br>必要なアポ数: <b>${ap.toLocaleString()}件</b><br>必要な架電数: <b>${ca.toLocaleString()}件</b>`}
+document.querySelectorAll("input").forEach(e=>e.oninput=f);f();''',
+  text="売上目標から、受注・アポ・架電に必要な数を逆算します。成約率や獲得率は、過去の実績の平均値を入れると、実際に近い目安になります。"),
+ dict(slug="ltv", title="顧客生涯価値(LTV)計算", desc="平均単価・購入頻度・継続年数から顧客生涯価値(LTV)と、獲得コストとの比率を計算。",
+  body='<label>平均購入単価(円)<input id="p" type="number" value="8000"></label><label>年間購入回数<input id="n" type="number" value="4"></label><label>継続年数<input id="y" type="number" value="3"></label><label>粗利率(%)<input id="g" type="number" value="40"></label><label>顧客獲得コスト(円)<input id="k" type="number" value="15000"></label><div class="res" id="r"></div>',
+  js=F+'''function f(){const p=+$("p").value,n=+$("n").value,y=+$("y").value,g=+$("g").value/100,k=+$("k").value;
+const s=p*n*y,gp=s*g;
+$("r").innerHTML=`売上ベースLTV: <b>${f$(s)}円</b><br>粗利ベースLTV: <b>${f$(gp)}円</b><br>LTV÷獲得コスト: <b>${k>0?(gp/k).toFixed(2):"-"}倍</b>(一般に3倍以上が目安と言われます)`}
+document.querySelectorAll("input").forEach(e=>e.oninput=f);f();''',
+  text="1人の顧客が取引期間全体でもたらす価値を計算します。獲得コストの上限を決めたり、継続施策に投資する判断材料にします。3倍の目安は業種で異なる一般論です。"),
+ dict(slug="nouki-gyakusan", title="納期からの逆算(営業日)", desc="納期日から、必要な営業日数ぶん前の開始期限を逆算。土日を除いて計算。",
+  body='<label>納期日<input id="a" type="date"></label><label>必要な営業日数<input id="n" type="number" value="10"></label><div class="res" id="r"></div>',
+  js='''$("a").value=new Date(Date.now()+30*864e5).toISOString().slice(0,10);
+const W=["日","月","火","水","木","金","土"];
+function f(){const d=new Date($("a").value),n=+$("n").value;if(isNaN(d)||!(n>=0)){$("r").textContent="入力を確認";return}
+let c=0;while(c<n){d.setDate(d.getDate()-1);const w=d.getDay();if(w!=0&&w!=6)c++}
+$("r").innerHTML=`開始期限: <b>${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${W[d.getDay()]})</b><br><small>※土日のみ除外。祝日・休業日は含まれていません。</small>`}
+document.querySelectorAll("input").forEach(e=>e.oninput=f);f();''',
+  text="納期から逆算して、いつまでに作業を始める必要があるかを求めます。祝日や会社の休業日は考慮されないため、余裕を持って確認してください。"),
+]
+SALES_FAQ.update({
+"funnel":[("成約率や獲得率はどう決めればよいですか？","過去3か月程度の実績の平均を使います。実績がない場合は、まず仮の数値で試算し、実績が出たら置き換えてください。"),("結果が大きすぎる場合は？","単価の引き上げ、成約率の改善、紹介などの別の流入経路を検討する材料にしてください。")],
+"ltv":[("LTVとは何ですか？","1人の顧客が取引期間全体で生み出す売上や利益の合計です。顧客生涯価値とも呼ばれます。"),("獲得コストはどう数えますか？","広告費や営業の人件費など、新規顧客を獲得するためにかかった費用を、獲得した顧客数で割った値です。"),("3倍という目安は絶対ですか？","いいえ。一般によく言われる目安で、業種や事業の段階によって適切な水準は異なります。")],
+"nouki-gyakusan":[("営業日はどう数えますか？","土曜・日曜を除いた日数です。納期日当日は数えず、その前の日から数えます。"),("祝日は考慮されますか？","いいえ。祝日や会社の休業日は含まれません。必要に応じて、余裕を持った日数を入力してください。")],
+})
